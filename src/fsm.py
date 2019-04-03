@@ -28,7 +28,7 @@ Overview of classes:
         an output value stored in the current state.
     http://en.wikipedia.org/wiki/Moore_machine
 
-    MealyMachine -- another specialized transducer. Its output() method returns 
+    MealyMachine -- another specialized transducer. Its output() method returns
         a value assigned to the transition cause by the input value.
     http://en.wikipedia.org/wiki/Mealy_machine
 """
@@ -54,7 +54,7 @@ class StateError(FSMError):
 
 
 class FiniteStateMachine(object):
-    
+
     """Generic Finite State Machine."""
 
     DOT_ATTRS = {
@@ -84,7 +84,7 @@ class FiniteStateMachine(object):
     @property
     def all_transitions(self):
         """Get transitions from states.
-        
+
         Returns:
             List of three element tuples each consisting of
             (source state, input, destination state)
@@ -94,7 +94,7 @@ class FiniteStateMachine(object):
             for input_value, dst_state in src_state.items():
                 transitions.append((src_state, input_value, dst_state))
         return transitions
-        
+
     def transition(self, input_value):
         """Transition to the next state."""
         current = self.current_state
@@ -102,7 +102,7 @@ class FiniteStateMachine(object):
             raise TransitionError('Current state not set.')
 
         destination_state = current.get(input_value, current.default_transition)
-        if destination_state is None: 
+        if destination_state is None:
             raise TransitionError('Cannot transition from state %r'
                                   ' on input %r.' % (current.name, input_value))
         else:
@@ -136,7 +136,7 @@ class Acceptor(FiniteStateMachine):
 
 
 class Transducer(FiniteStateMachine):
-    
+
     """A semiautomaton transducer."""
 
     def _setup(self):
@@ -151,7 +151,7 @@ class Transducer(FiniteStateMachine):
         """Process input data."""
         self.reset()
         for item in input_data:
-            if yield_none: 
+            if yield_none:
                 yield self.output(item)
             elif self.output(item) is not None:
                 yield self.output(item)
@@ -159,7 +159,7 @@ class Transducer(FiniteStateMachine):
 
 
 class MooreMachine(Transducer):
-    
+
     """Moore Machine."""
 
     def output(self, input_value):
@@ -168,7 +168,7 @@ class MooreMachine(Transducer):
 
 
 class MealyMachine(Transducer):
-    
+
     """Mealy Machine."""
 
     def output(self, input_value):
@@ -177,7 +177,7 @@ class MealyMachine(Transducer):
 
 
 class State(dict):
-    
+
     """State class."""
 
     DOT_ATTRS = {
@@ -187,7 +187,7 @@ class State(dict):
     DOT_ACCEPTING = 'doublecircle'
 
     def __init__(self, name, initial=False, accepting=False, output=None,
-                 on_entry=NOOP, on_exit=NOOP, on_input=NOOP_ARG, 
+                 on_entry=NOOP, on_exit=NOOP, on_input=NOOP_ARG,
                  on_transition=NOOP_ARG, machine=None, default=None):
         """Construct a state."""
         dict.__init__(self)
@@ -211,7 +211,7 @@ class State(dict):
                     machine.accepting_states.append(self)
                 except AttributeError:
                     raise StateError('The %r %s does not support accepting '
-                                     'states.' % (machine.name, 
+                                     'states.' % (machine.name,
                                      machine.__class__.__name__))
             if initial:
                 machine.init_state = self
@@ -245,7 +245,8 @@ def get_graph(fsm, title=None):
     try:
         import pygraphviz as pgv
     except ImportError:
-        pgv = None    
+        print("pygraphviz is not installed!")
+        raise
 
     if title is None:
         title = fsm.name
@@ -272,6 +273,6 @@ def get_graph(fsm, title=None):
         fsm_graph.add_edge(src.name, dst.name, label=label)
     for state in fsm.states:
         if state.default_transition is not None:
-            fsm_graph.add_edge(state.name, state.default_transition.name, 
+            fsm_graph.add_edge(state.name, state.default_transition.name,
                                label='else')
     return fsm_graph

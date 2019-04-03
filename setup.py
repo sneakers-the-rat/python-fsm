@@ -25,7 +25,7 @@ The list of implemented FSM types:
    an output value stored in the current state.
    http://en.wikipedia.org/wiki/Moore_machine
 
- - MealyMachine -- another specialized transducer. Its output() method returns 
+ - MealyMachine -- another specialized transducer. Its output() method returns
    a value assigned to the transition that the input value caused.
    http://en.wikipedia.org/wiki/Mealy_machine
 """
@@ -49,5 +49,6 @@ setup(name='python-fsm',
       download_url='http://python-fsm.googlecode.com/files/python-fsm-%s.tar.gz' % __version__,
       package_dir={'': 'src'},
       py_modules=['fsm'],
+      install_requires=["pygraphviz"]
      )
 
